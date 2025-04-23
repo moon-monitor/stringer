@@ -250,6 +250,15 @@ func (g *Generator) generate(typeName string) {
 	g.Printf("func (i %s) %s() %s {\n", typeName, originValueMethodName, originTypeName)
 	g.Printf("\t return %s(i)\n", originTypeName)
 	g.Printf("}\n")
+
+	// 添加 Exist 方法
+	g.Printf("\n// Check if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Check() bool {\n", typeName)
+	g.Printf("\tif i < 0 || i >= %s(len(_%s_index)-1) {\n", typeName, typeName)
+	g.Printf("\t\treturn false\n")
+	g.Printf("\t}\n")
+	g.Printf("\treturn true\n")
+	g.Printf("}\n")
 }
 
 // toCamelCase converts a string to camel case.
