@@ -250,15 +250,6 @@ func (g *Generator) generate(typeName string) {
 	g.Printf("func (i %s) %s() %s {\n", typeName, originValueMethodName, originTypeName)
 	g.Printf("\t return %s(i)\n", originTypeName)
 	g.Printf("}\n")
-
-	// 添加 Exist 方法
-	g.Printf("\n// Check if the value is in the range of the constant.\n")
-	g.Printf("func (i %s) Check() bool {\n", typeName)
-	g.Printf("\tif i < 0 || i >= %s(len(_%s_index)-1) {\n", typeName, typeName)
-	g.Printf("\t\treturn false\n")
-	g.Printf("\t}\n")
-	g.Printf("\treturn true\n")
-	g.Printf("}\n")
 }
 
 // toCamelCase converts a string to camel case.
@@ -555,6 +546,12 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 	} else {
 		g.Printf(stringOneRunWithOffset, typeName, values[0].String(), usize(len(values)), lessThanZero)
 	}
+
+	// 添加 Exist 方法
+	g.Printf("\n// Check if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Check() bool {\n", typeName)
+	g.Printf("\treturn i >= 0 && i < %s(len(_%s_index)-1)\n", typeName, typeName)
+	g.Printf("}\n")
 }
 
 // Arguments to format are:
@@ -615,6 +612,24 @@ func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string) {
 	g.Printf("\t\treturn \"%s(\" + strconv.FormatInt(int64(i), 10) + \")\"\n", typeName)
 	g.Printf("\t}\n")
 	g.Printf("}\n")
+
+	g.Printf("\n// Check if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Check() bool {\n", typeName)
+	// 模仿上面的 String 方法
+	g.Printf("\tswitch {\n")
+	for _, values := range runs {
+		if len(values) == 1 {
+			g.Printf("\tcase i == %s:\n", &values[0])
+			g.Printf("\t\treturn true\n")
+			continue
+		}
+		g.Printf("\tcase %s <= i && i <= %s:\n", &values[0], &values[len(values)-1])
+		g.Printf("\t\treturn true\n")
+	}
+	g.Printf("\tdefault:\n")
+	g.Printf("\t\treturn false\n")
+	g.Printf("\t}\n")
+	g.Printf("}\n")
 }
 
 // buildMap handles the case where the space is so sparse a map is a reasonable fallback.
@@ -632,6 +647,15 @@ func (g *Generator) buildMap(runs [][]Value, typeName string) {
 	}
 	g.Printf("}\n\n")
 	g.Printf(stringMap, typeName)
+
+	// 添加 Exist 方法
+	g.Printf("\n// Check if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Check() bool {\n", typeName)
+	g.Printf("\tif i < 0 || i >= %s(len(_%s_index)-1) {\n", typeName, typeName)
+	g.Printf("\t\treturn false\n")
+	g.Printf("\t}\n")
+	g.Printf("\treturn true\n")
+	g.Printf("}\n")
 }
 
 // Argument to format is the type name.

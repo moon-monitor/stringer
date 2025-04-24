@@ -24,6 +24,11 @@ func (i Gender) String() string {
 	return _Gender_name[_Gender_index[i]:_Gender_index[i+1]]
 }
 
+// Check if the value is in the range of the constant.
+func (i Gender) Check() bool {
+	return i >= 0 && i < Gender(len(_Gender_index)-1)
+}
+
 // IsUnknown Is it unknown
 func (i Gender) IsUnknown() bool {
 	return i == GenderUnknown
@@ -42,12 +47,4 @@ func (i Gender) IsFemale() bool {
 // GetValue Retrieve the raw type value.
 func (i Gender) GetValue() int8 {
 	return int8(i)
-}
-
-// Check if the value is in the range of the constant.
-func (i Gender) Check() bool {
-	if i < 0 || i >= Gender(len(_Gender_index)-1) {
-		return false
-	}
-	return true
 }
