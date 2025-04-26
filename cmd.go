@@ -248,6 +248,10 @@ func (g *Generator) generate(typeName string) {
 	originTypeName := values[0].UnderlyingType
 	g.Printf("\n// %s Retrieve the raw type value.\n", originValueMethodName)
 	g.Printf("func (i %s) %s() %s {\n", typeName, originValueMethodName, originTypeName)
+	// 对于不存在的值，返回 0
+	g.Printf("\t if !i.Exist() {\n")
+	g.Printf("\t\treturn 0\n")
+	g.Printf("\t}\n")
 	g.Printf("\t return %s(i)\n", originTypeName)
 	g.Printf("}\n")
 }
@@ -548,8 +552,8 @@ func (g *Generator) buildOneRun(runs [][]Value, typeName string) {
 	}
 
 	// 添加 Exist 方法
-	g.Printf("\n// Check if the value is in the range of the constant.\n")
-	g.Printf("func (i %s) Check() bool {\n", typeName)
+	g.Printf("\n// Exist if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Exist() bool {\n", typeName)
 	g.Printf("\treturn i >= 0 && i < %s(len(_%s_index)-1)\n", typeName, typeName)
 	g.Printf("}\n")
 }
@@ -613,8 +617,8 @@ func (g *Generator) buildMultipleRuns(runs [][]Value, typeName string) {
 	g.Printf("\t}\n")
 	g.Printf("}\n")
 
-	g.Printf("\n// Check if the value is in the range of the constant.\n")
-	g.Printf("func (i %s) Check() bool {\n", typeName)
+	g.Printf("\n// Exist if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Exist() bool {\n", typeName)
 	// 模仿上面的 String 方法
 	g.Printf("\tswitch {\n")
 	for _, values := range runs {
@@ -649,8 +653,8 @@ func (g *Generator) buildMap(runs [][]Value, typeName string) {
 	g.Printf(stringMap, typeName)
 
 	// 添加 Exist 方法
-	g.Printf("\n// Check if the value is in the range of the constant.\n")
-	g.Printf("func (i %s) Check() bool {\n", typeName)
+	g.Printf("\n// Exist if the value is in the range of the constant.\n")
+	g.Printf("func (i %s) Exist() bool {\n", typeName)
 	g.Printf("\tif i < 0 || i >= %s(len(_%s_index)-1) {\n", typeName, typeName)
 	g.Printf("\t\treturn false\n")
 	g.Printf("\t}\n")

@@ -24,8 +24,8 @@ func (i Gender) String() string {
 	return _Gender_name[_Gender_index[i]:_Gender_index[i+1]]
 }
 
-// Check if the value is in the range of the constant.
-func (i Gender) Check() bool {
+// Exist if the value is in the range of the constant.
+func (i Gender) Exist() bool {
 	return i >= 0 && i < Gender(len(_Gender_index)-1)
 }
 
@@ -46,5 +46,8 @@ func (i Gender) IsFemale() bool {
 
 // GetValue Retrieve the raw type value.
 func (i Gender) GetValue() int8 {
+	if !i.Exist() {
+		return 0
+	}
 	return int8(i)
 }

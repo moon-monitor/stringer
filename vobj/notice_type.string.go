@@ -42,8 +42,8 @@ func (i NoticeType) String() string {
 	}
 }
 
-// Check if the value is in the range of the constant.
-func (i NoticeType) Check() bool {
+// Exist if the value is in the range of the constant.
+func (i NoticeType) Exist() bool {
 	switch {
 	case 1 <= i && i <= 2:
 		return true
@@ -85,5 +85,8 @@ func (i NoticeType) IsAll() bool {
 
 // GetValue Retrieve the raw type value.
 func (i NoticeType) GetValue() int8 {
+	if !i.Exist() {
+		return 0
+	}
 	return int8(i)
 }
